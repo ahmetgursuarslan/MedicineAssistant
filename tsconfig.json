@@ -2,14 +2,15 @@
   "compilerOptions": {
     "experimentalDecorators": true,                                
     "module": "commonjs",
-    "rootDir": "src",                               
+    "baseUrl": "./src",                               
     "outDir": "build",                                   
     "target": "es2017",
-    "esModuleInterop": true,                            
-    "forceConsistentCasingInFileNames": true,            
-    /* Type Checking */
-    "strict": true,                                  
-    "noImplicitAny": false,                               
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "incremental": true,                             
     "skipLibCheck": true                                 
   },
   "files.exclude": {
