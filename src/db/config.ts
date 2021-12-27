@@ -1,6 +1,6 @@
+import { Company } from 'entities/company';
+import { User } from 'entities/user';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-
-//Entities import 
 
 const typePostegreSqlOrmConfig: PostgresConnectionOptions = {
     type: "postgres",
@@ -11,7 +11,7 @@ const typePostegreSqlOrmConfig: PostgresConnectionOptions = {
     database: process.env.DB_PLSQL_NAME,
     synchronize: Boolean(process.env.DB_PLSQL_SYNC),
     logging: Boolean(process.env.DB_PLSQL_LOGGING),
-    //entities: []
+    entities: [User,Company],
 };
 
 export { typePostegreSqlOrmConfig };
