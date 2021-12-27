@@ -66,6 +66,8 @@
     "@nestjs/core": "^8.2.4",
     "@nestjs/platform-express": "^8.1.1",
     "@nestjs/swagger": "^5.1.5",
+    "@nestjs/typeorm": "^8.0.2",
+    "@types/uuid": "^8.3.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "helmet": "^4.6.0",
