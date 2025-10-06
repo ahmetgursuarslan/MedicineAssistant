@@ -1,6 +1,3 @@
-import { Company } from '../entities/company';
-import { User } from '../entities/user';
-export class UserDto{
-    public user :User;
-    public companies: Company[];
-}
+// Deprecated legacy DTO kept temporarily to avoid import errors.
+// Use UserResponseDto in users/dto instead.
+export class UserDto {}
