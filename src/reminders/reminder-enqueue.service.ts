@@ -1,0 +1,40 @@
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, LessThanOrEqual } from 'typeorm';
+import { Reminder } from '../entities/reminder';
+import { REMINDER_QUEUE_TOKEN, REMINDER_QUEUE } from './queue/reminder-queue.constants';
+import { Queue } from 'bullmq';
+import { ReminderStatus } from '../entities/enums';
+
+@Injectable()
+export class ReminderEnqueueService {
+  private readonly logger = new Logger(ReminderEnqueueService.name);
+
+  constructor(
+    @InjectRepository(Reminder) private readonly reminders: Repository<Reminder>,
+    @Inject(REMINDER_QUEUE_TOKEN) private readonly queue: Queue | null,
+  ) {}
+
+  // Her 5 dakikada bir önümüzdeki 5 dakika içinde tetikleme zamanı gelmiş PLANNED reminder'ları kuyruğa al.
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async enqueueDue() {
+    if (!this.queue) return; // spec generation vb.
+    const now = new Date();
+    const horizon = new Date(now.getTime() + 5 * 60 * 1000);
+    const due = await this.reminders.find({
+      where: {
+        reminderStatus: ReminderStatus.PLANNED,
+        reminderExecutionTime: LessThanOrEqual(horizon),
+      },
+      take: 200,
+    });
+    if (!due.length) return;
+    for (const r of due) {
+      await this.queue.add('dispatch', { reminderId: r.reminderId, executeAt: r.reminderExecutionTime });
+      r.reminderStatus = ReminderStatus.QUEUED;
+      await this.reminders.save(r);
+    }
+    this.logger.log(`Enqueued ${due.length} reminders to ${REMINDER_QUEUE}`);
+  }
+}
