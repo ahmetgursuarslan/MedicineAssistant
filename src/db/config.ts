@@ -1,5 +1,5 @@
-import { Company } from 'entities/company';
-import { User } from 'entities/user';
+import { Company } from '../entities/company';
+import { User } from '../entities/user';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 const typePostegreSqlOrmConfig: PostgresConnectionOptions = {
