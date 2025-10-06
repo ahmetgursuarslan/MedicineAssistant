@@ -1,29 +1,30 @@
-import { ParseUUIDPipe } from '@nestjs/common';
-import { type } from 'os';
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Index } from 'typeorm';
 import { Company } from './company';
 
-@Entity('users')
-export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  @Column({name:'user_id'})
-  userId: string;
+@Entity({ name: 'users' })
+export class User {
+  @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
+  userId!: string;
 
-  @Column({name:'user_email'})
-  userEmail: string;
+  @Index('uq_user_email', { unique: true })
+  @Column({ name: 'user_email', type: 'varchar', length: 200 })
+  userEmail!: string;
 
-  @Column({name:'user_password'})
-  userPassword: string;
-  
-  @Column({name:'user_registration_date'})
-  userRegistrationDate: Date;
+  @Column({ name: 'user_password', type: 'varchar', length: 512 })
+  userPassword!: string;
 
-  @Column({name:'user_update_date'})
-  userUpdateDate: Date;
+  @Column({ name: 'user_registration_date', type: 'timestamptz' })
+  userRegistrationDate!: Date;
 
-  @Column({name:'user_active'})
-  userActive: boolean;
+  @Column({ name: 'user_update_date', type: 'timestamptz', nullable: true })
+  userUpdateDate!: Date | null;
 
-  @OneToMany(()=> Company, company => company.user )
-  companies : Company[];
+  @Column({ name: 'user_active', type: 'boolean', default: true })
+  userActive!: boolean;
+
+  @Column({ name: 'user_role', type: 'varchar', length: 20, default: 'user' })
+  userRole!: string;
+
+  @OneToMany(() => Company, (company) => company.user)
+  companies!: Company[];
 }

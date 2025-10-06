@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
-import { UserDto } from 'dtos/user.dto';
-import { User } from 'entities/user';
-import { UserService } from 'providers/user.service';
+import { UserDto } from '../dtos/user.dto';
+import { User } from '../entities/user';
+import { UserService } from '../providers/user.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 
 @Controller('user')
@@ -10,7 +10,7 @@ export class UserController{
     }
     
     @Get()
-    findOne(userId: string): Promise<UserDto>{
+    findOne(userId: string): Promise<User & { companies?: any[] }>{
         return this.userService.findOne(userId);
     }
     @Post()
