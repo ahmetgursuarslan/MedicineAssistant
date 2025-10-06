@@ -22,7 +22,7 @@
     "db:migrate": "ts-node -r tsconfig-paths/register src/db/run-migrations.ts",
     "db:revert": "ts-node -r tsconfig-paths/register src/db/revert-migration.ts",
     "db:seed": "ts-node -r tsconfig-paths/register src/db/seed.ts",
-    "generate:openapi": "ts-node -r tsconfig-paths/register src/openapi/generate-spec.ts",
+  "generate:openapi": "ts-node -P tsconfig.openapi.json -r tsconfig-paths/register src/openapi/generate-spec.ts",
     "prepare": "husky install"
   },
   "lint-staged": {
