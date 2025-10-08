@@ -7,8 +7,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "prebuild": "rimraf build",
-    "build": "nest build && npm run generate:openapi",
+  "prebuild": "rimraf build",
+  "build": "tsc -p tsconfig.build.json",
+  "build:all": "npm run build && npm run generate:openapi",
     "start": "node build/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -19,10 +20,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:migrate": "ts-node -r tsconfig-paths/register src/db/run-migrations.ts",
-    "db:revert": "ts-node -r tsconfig-paths/register src/db/revert-migration.ts",
-    "db:seed": "ts-node -r tsconfig-paths/register src/db/seed.ts",
-  "generate:openapi": "ts-node -P tsconfig.openapi.json -r tsconfig-paths/register src/openapi/generate-spec.ts",
+    "db:migrate": "ts-node -r dotenv/config -r tsconfig-paths/register src/db/run-migrations.ts",
+    "db:revert": "ts-node -r dotenv/config -r tsconfig-paths/register src/db/revert-migration.ts",
+    "db:seed": "ts-node -r dotenv/config -r tsconfig-paths/register src/db/seed.ts",
+    "db:create": "ts-node -r dotenv/config -r tsconfig-paths/register scripts/create-database.ts",
+    "seed": "npm run db:seed",
+  "db:setup": "npm run db:create && npm run db:migrate && npm run db:seed",
+  "db:reset": "npm run db:revert && npm run db:migrate && npm run db:seed",
+  "generate:openapi": "ts-node -P tsconfig.openapi.json src/openapi/generate-spec.ts",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -34,31 +39,6 @@
       "prettier --write",
       "eslint --fix"
     ]
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
@@ -88,7 +68,8 @@
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.0",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
@@ -100,6 +81,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.30",
     "@types/passport-jwt": "^3.0.12",
+    "@types/pg": "^8.15.5",
     "@types/supertest": "^2.0.16",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../modules/app.module';
+import { DocsModule } from './docs.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -20,10 +20,11 @@ async function generate() {
   console.log('Creating Nest application for spec...');
   let app;
   try {
-    app = await NestFactory.create(AppModule, { logger: false });
+    process.env.GENERATE_OPENAPI = 'true';
+  // Use normal Nest application because SwaggerModule requires INestApplication
+  app = await NestFactory.create(DocsModule, { logger: false });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('Failed during NestFactory.create:', e);
+    console.error('Failed during NestFactory.createApplicationContext:', e);
     throw e;
   }
   // eslint-disable-next-line no-console

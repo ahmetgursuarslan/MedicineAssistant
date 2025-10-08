@@ -3,8 +3,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { Reminder } from '../entities/reminder';
-import { REMINDER_QUEUE_TOKEN, REMINDER_QUEUE } from './queue/reminder-queue.constants';
-import { Queue } from 'bullmq';
+// Using centralized queue service now
+import { ReminderQueueService } from '../queue/reminder-queue.service';
+import { REMINDER_QUEUE } from '../queue/reminder-queue.constants';
 import { ReminderStatus } from '../entities/enums';
 
 @Injectable()
@@ -13,13 +14,14 @@ export class ReminderEnqueueService {
 
   constructor(
     @InjectRepository(Reminder) private readonly reminders: Repository<Reminder>,
-    @Inject(REMINDER_QUEUE_TOKEN) private readonly queue: Queue | null,
+    private readonly reminderQueue: ReminderQueueService,
   ) {}
 
   // Her 5 dakikada bir önümüzdeki 5 dakika içinde tetikleme zamanı gelmiş PLANNED reminder'ları kuyruğa al.
   @Cron(CronExpression.EVERY_5_MINUTES)
   async enqueueDue() {
-    if (!this.queue) return; // spec generation vb.
+  // Queue yoksa (örn. docs generation) sessizce çık
+  // reminderQueue.enqueueDispatch zaten null queue'yu kontrol ediyor.
     const now = new Date();
     const horizon = new Date(now.getTime() + 5 * 60 * 1000);
     const due = await this.reminders.find({
@@ -31,7 +33,7 @@ export class ReminderEnqueueService {
     });
     if (!due.length) return;
     for (const r of due) {
-      await this.queue.add('dispatch', { reminderId: r.reminderId, executeAt: r.reminderExecutionTime });
+  await this.reminderQueue.enqueueDispatch(r.reminderId, r.reminderExecutionTime);
       r.reminderStatus = ReminderStatus.QUEUED;
       await this.reminders.save(r);
     }

@@ -10,6 +10,14 @@ async function seed() {
     await AppDataSource.initialize();
   }
 
+  // Auto-run migrations if core table 'users' is absent
+  const usersTable = await AppDataSource.query("SELECT to_regclass('public.users') as exists");
+  if (!usersTable[0]?.exists) {
+    // eslint-disable-next-line no-console
+    console.log('[seed] users table not found -> running migrations');
+    await AppDataSource.runMigrations();
+  }
+
   const userRepo = AppDataSource.getRepository(User);
   const companyRepo = AppDataSource.getRepository(Company);
   const medicineRepo = AppDataSource.getRepository(Medicine);
