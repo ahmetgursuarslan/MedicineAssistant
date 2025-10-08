@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from '../controllers/app.controller';
-import { AppService } from '../providers/app.service';
-import { configValidationSchema } from '../config/configuration';
+import { envValidationSchema } from '../config/env.validation';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CompaniesModule } from '../companies/companies.module';
@@ -17,10 +15,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ReminderQueueModule } from '../queue/reminder-queue.module';
 
 @Module({
   imports: [
-  ConfigModule.forRoot({ isGlobal: true, validationSchema: configValidationSchema }),
+  ConfigModule.forRoot({ isGlobal: true, validationSchema: envValidationSchema }),
     ScheduleModule.forRoot(),
     ...(process.env.GENERATE_OPENAPI === 'true'
       ? [
@@ -51,15 +52,16 @@ import { ScheduleModule } from '@nestjs/schedule';
         ]),
     JwtModule.register({ global: true }),
     ThrottlerModule.forRoot([{ ttl: 900, limit: 100 }]),
-  AuthModule,
-  UsersModule,
-  CompaniesModule,
-  DiseasesModule,
-  AllergensModule,
-  MedicinesModule,
-  TimersModule,
-  RemindersModule,
+    AuthModule,
+    UsersModule,
+    CompaniesModule,
+    DiseasesModule,
+    AllergensModule,
+    MedicinesModule,
+    TimersModule,
+    RemindersModule,
   RiskModule,
+  ReminderQueueModule,
   ],
   controllers: [AppController],
   providers: [

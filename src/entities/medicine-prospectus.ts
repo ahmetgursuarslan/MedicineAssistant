@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { Medicine } from './medicine';
 import { User } from './user';
 
@@ -26,8 +26,10 @@ export class MedicineProspectus {
   prospectusUpdateBy?: string;
 
   @ManyToOne(() => Medicine, (m) => m.prospectus, { nullable: false })
+  @JoinColumn({ name: 'medicine_id', referencedColumnName: 'medicineId' })
   medicine!: Medicine;
 
   @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'prospectus_created_by', referencedColumnName: 'userId' })
   createdBy!: User;
 }

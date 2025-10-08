@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2021",
+  // Using Node16 module system (hybrid CJS/ESM) for future TS compatibility
   "module": "Node16",
     "outDir": "build",
     "rootDir": "./src",
     "strict": true,
+    "isolatedModules": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
@@ -13,9 +15,9 @@
     "sourceMap": true,
     "declaration": true,
     "incremental": true,
-  "moduleResolution": "node16",
-  "resolveJsonModule": true,
-  "strictPropertyInitialization": false
+  "moduleResolution": "Node16",
+    "resolveJsonModule": true,
+    "strictPropertyInitialization": false
   },
   "exclude": ["node_modules", "build", "dist"],
   "include": ["src/**/*.ts"]

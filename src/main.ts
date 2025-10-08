@@ -1,17 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './modules/app.module';
-import helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
-import { PgExceptionFilter } from './common/filters/pg-exception.filter';
+import { AppModule } from './app/app.module';
+import { configureApp } from './app/bootstrap';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 import { LoggerService } from '@nestjs/common';
 
 async function bootstrap() {
+  // Safe pretty logger fallback: only enable if not production AND pino-pretty is installed
+  let transport: any = undefined;
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      require.resolve('pino-pretty');
+      transport = { target: 'pino-pretty' };
+    } catch {
+      // pino-pretty not installed; continue without pretty transport
+    }
+  }
   const pinoBase = pino({
     level: process.env.LOG_LEVEL || 'info',
-    transport: process.env.NODE_ENV === 'production' ? undefined : { target: 'pino-pretty' },
+    ...(transport ? { transport } : {}),
   });
   const nestLogger: LoggerService = {
     log(message: any, context?: string) {
@@ -45,17 +53,7 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api/v1');
-  app.enableCors();
-  app.use(helmet());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
+  configureApp(app);
 
   const config = new DocumentBuilder()
     .setTitle('Medicine Assistant')
@@ -65,7 +63,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
-  app.useGlobalFilters(new PgExceptionFilter());
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
