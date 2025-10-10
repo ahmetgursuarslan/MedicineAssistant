@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../entities/user';
+import { RefreshToken } from '../entities/refresh-token';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -20,8 +21,33 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: getRepositoryToken(User), useValue: { findOne: jest.fn(), create: jest.fn(), save: jest.fn() } },
-        { provide: JwtService, useValue: { signAsync: jest.fn().mockResolvedValue('token') } },
-        { provide: ConfigService, useValue: { get: () => undefined } },
+        { provide: getRepositoryToken(RefreshToken), useValue: { findOne: jest.fn(), save: jest.fn() } },
+        {
+          provide: JwtService,
+          useValue: {
+            signAsync: jest.fn().mockImplementation((payload?: any, opts?: any) => {
+              // First call (access) -> return fixed token, Second call (refresh) -> return JWT-like with exp
+              // We use opts.expiresIn to differentiate: access uses JWT_EXPIRES_IN, refresh uses JWT_REFRESH_EXPIRES_IN
+              if (opts && String(opts.expiresIn).includes('7')) {
+                const p = { exp: Math.floor(Date.now() / 1000) + 3600 };
+                return Promise.resolve(`e30.${Buffer.from(JSON.stringify(p)).toString('base64')}.sig`);
+              }
+              return Promise.resolve('token');
+            }),
+            verifyAsync: jest.fn().mockImplementation(() => ({ sub: 'id', jti: 'jti' })),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (key: string, fallback?: any) => {
+              if (key === 'JWT_EXPIRES_IN') return '900s';
+              if (key === 'JWT_REFRESH_EXPIRES_IN') return '7d';
+              if (key === 'JWT_SECRET') return 'secret';
+              return fallback;
+            },
+          },
+        },
       ],
     }).compile();
     service = moduleRef.get(AuthService);

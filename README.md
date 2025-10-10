@@ -113,6 +113,28 @@ API base path: `http://localhost:3000/api/v1`
 
 Swagger UI (if enabled at runtime): `http://localhost:3000/api-docs`
 
+### 🐳 Run with Docker (recommended)
+
+1) Create your env file by copying `.env.example` to `.env` and adjust values if needed.
+	- By default, the compose file wires the app to `db` and `redis` services.
+2) Build and start all services:
+
+```bash
+docker compose up --build
+```
+
+3) App will be available at:
+
+```
+http://localhost:3000
+```
+
+To stop:
+
+```bash
+docker compose down
+```
+
 ## 🗄 Database Lifecycle
 All schema changes handled via migrations (no `synchronize`).
 
