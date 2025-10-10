@@ -21,6 +21,11 @@ export class AuthController {
     return this.auth.login(dto.email, dto.password);
   }
 
+  @Post('refresh')
+  async refresh(@Body() body: { refreshToken: string }) {
+    return this.auth.refresh(body.refreshToken);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
