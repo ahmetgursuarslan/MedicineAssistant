@@ -10,16 +10,28 @@ import { REMINDER_QUEUE, REMINDER_QUEUE_TOKEN, REMINDER_JOB_DISPATCH } from './r
 export class ReminderWorker implements OnApplicationBootstrap {
   private worker?: Worker;
   private readonly logger = new Logger(ReminderWorker.name);
+  private isDisabled = false;
+  
   constructor(
     @Inject(REMINDER_QUEUE_TOKEN) private readonly queue: Queue | null,
     @InjectRepository(Reminder) private readonly reminders: Repository<Reminder>,
-  ) {}
+  ) {
+    // Disable worker during OpenAPI generation
+    if (process.env.GENERATE_OPENAPI === 'true') {
+      this.isDisabled = true;
+    }
+  }
 
   onApplicationBootstrap() {
-    if (!this.queue) {
-      this.logger.warn('Reminder queue disabled (no Redis). Worker not started.');
+    if (this.isDisabled || !this.queue) {
+      if (this.isDisabled) {
+        this.logger.log('OpenAPI generation mode: skipping reminder worker initialization.');
+      } else {
+        this.logger.warn('Reminder queue disabled (no Redis). Worker not started.');
+      }
       return; // graceful noop
     }
+    
     this.worker = new Worker(
       REMINDER_QUEUE,
       async (job) => {

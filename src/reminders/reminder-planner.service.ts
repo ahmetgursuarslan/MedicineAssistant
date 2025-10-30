@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,16 +9,31 @@ import { ReminderStatus } from '../entities/enums';
 // Basit planlayıcı: Her gece 00:05'te (UTC) önümüzdeki 7 gün için eksik reminder'ları üretir.
 // Geliştirme: BullMQ kuyruğuna iş ekleme ileride entegre edilecek.
 @Injectable()
-export class ReminderPlannerService {
+export class ReminderPlannerService implements OnModuleInit {
   private readonly logger = new Logger(ReminderPlannerService.name);
+  private isDisabled = false;
 
   constructor(
     @InjectRepository(Timer) private readonly timers: Repository<Timer>,
     @InjectRepository(Reminder) private readonly reminders: Repository<Reminder>,
-  ) {}
+  ) {
+    // Disable scheduled jobs during OpenAPI generation
+    if (process.env.GENERATE_OPENAPI === 'true') {
+      this.isDisabled = true;
+    }
+  }
+
+  async onModuleInit() {
+    if (this.isDisabled) {
+      this.logger.log('OpenAPI generation mode: skipping scheduled reminder planner.');
+      return;
+    }
+  }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async planDaily() {
+    if (this.isDisabled) return; // Skip execution in OpenAPI generation mode
+
     // Tarih aralığı: bugün (00:00) -> +7 gün
     const now = new Date();
     const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
