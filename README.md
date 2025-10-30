@@ -113,6 +113,15 @@ API base path: `http://localhost:3000/api/v1`
 
 Swagger UI (if enabled at runtime): `http://localhost:3000/api-docs`
 
+## 📄 Accessing OpenAPI (Swagger) UI
+
+Once the application is running (e.g., via `npm start` or `docker compose up`):
+
+-   **Default URL:** Open your browser and navigate to `http://localhost:3000/api-docs`.
+-   **Custom Port:** If you've configured the application to run on a different port (e.g., by setting the `PORT` environment variable), adjust the URL accordingly (e.g., `http://localhost:3001/api-docs`).
+
+This interactive documentation allows you to explore the API endpoints, their parameters, and expected responses.
+
 ### 🐳 Run with Docker (recommended)
 
 1) Create your env file by copying `.env.example` to `.env` and adjust values if needed.
@@ -235,11 +244,11 @@ Output (default): `openapi-spec.json` (path may be adjusted in `src/openapi/gene
 
 ## 🧭 Roadmap
 - [ ] Fix standalone OpenAPI generation edge cases (bootstrap exit)
-- [ ] Add refresh token rotation & revocation store
-- [ ] Add Dockerfile + docker-compose (Postgres + Redis + app)
+- [x] Add refresh token rotation & revocation store
+- [x] Add Dockerfile + docker-compose (Postgres + Redis + app)
 - [ ] CI pipeline (lint, test, coverage gate, build, spec artifact)
 - [ ] Index & full‑text search (GIN + ts_vector on prospectus)
-- [ ] Notification channel adapters (email / push abstraction)
+- [x] Notification channel adapters (email / push abstraction) - *implemented queue system*
 - [ ] Additional health analytics endpoints
 - [ ] Role-based authorization enforcement
 

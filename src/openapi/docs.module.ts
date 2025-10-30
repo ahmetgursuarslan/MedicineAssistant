@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CompaniesModule } from '../companies/companies.module';
@@ -16,12 +16,17 @@ import { RiskModule } from '../risk/risk.module';
   imports: [
     // Provide config & lightweight in-memory DB so repositories can resolve
     ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: ':memory:',
-      entities: [],
-      synchronize: false,
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+      useFactory: async (): Promise<TypeOrmModuleOptions> => {
+        return {
+          type: 'sqlite',
+          database: ':memory:',
+          entities: [],
+          synchronize: false,
+          autoLoadEntities: true,
+          logging: false, // Disable logging for OpenAPI generation
+        };
+      },
     }),
     AuthModule,
     UsersModule,
