@@ -21,8 +21,8 @@ async function generate() {
   let app;
   try {
     process.env.GENERATE_OPENAPI = 'true';
-  // Use normal Nest application because SwaggerModule requires INestApplication
-  app = await NestFactory.create(DocsModule, { logger: false });
+    // Use normal Nest application because SwaggerModule requires INestApplication
+    app = await NestFactory.create(DocsModule);
   } catch (e) {
     console.error('Failed during NestFactory.createApplicationContext:', e);
     throw e;
