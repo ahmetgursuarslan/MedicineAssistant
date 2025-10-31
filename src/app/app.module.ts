@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TerminusModule } from '@nestjs/terminus';
 import { envValidationSchema } from '../config/env.validation';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
@@ -22,6 +23,7 @@ import { ReminderQueueModule } from '../queue/reminder-queue.module';
 @Module({
   imports: [
   ConfigModule.forRoot({ isGlobal: true, validationSchema: envValidationSchema }),
+    TerminusModule,
     ScheduleModule.forRoot(),
     ...(process.env.GENERATE_OPENAPI === 'true'
       ? [
