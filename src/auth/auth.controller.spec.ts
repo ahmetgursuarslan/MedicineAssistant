@@ -7,6 +7,7 @@ describe('AuthController', () => {
   const authService = {
     register: jest.fn().mockResolvedValue({ userId: 1, email: 'a@b.com' }),
     login: jest.fn().mockResolvedValue({ accessToken: 'jwt' }),
+    sendEmailVerification: jest.fn().mockResolvedValue(undefined),
   } as Partial<AuthService> as AuthService;
 
   beforeEach(async () => {
@@ -20,6 +21,7 @@ describe('AuthController', () => {
   it('register delegates to service', async () => {
     const res = await controller.register({ email: 'a@b.com', password: 'x' });
     expect(authService.register).toHaveBeenCalledWith('a@b.com', 'x');
+    expect(authService.sendEmailVerification).toHaveBeenCalledWith('a@b.com');
     expect(res).toEqual({ userId: 1, email: 'a@b.com' });
   });
 
