@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { EmailService } from '../../src/common/email/email.service';
 
 jest.mock('bcrypt');
 
@@ -15,6 +16,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let repo: jest.Mocked<Repository<User>>;
   let jwt: JwtService;
+  let emailService: EmailService;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -48,11 +50,19 @@ describe('AuthService', () => {
             },
           },
         },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmailVerification: jest.fn(),
+            sendPasswordResetEmail: jest.fn(),
+          },
+        },
       ],
     }).compile();
     service = moduleRef.get(AuthService);
     repo = moduleRef.get(getRepositoryToken(User));
     jwt = moduleRef.get(JwtService);
+    emailService = moduleRef.get(EmailService);
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
   });

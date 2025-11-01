@@ -25,6 +25,21 @@ export class User {
   @Column({ name: 'user_role', type: 'varchar', length: 20, default: 'user' })
   userRole!: string;
 
+  @Column({ name: 'email_verified', type: 'boolean', default: false })
+  emailVerified!: boolean;
+
+  @Column({ name: 'email_verification_token', type: 'varchar', nullable: true })
+  emailVerificationToken!: string | null;
+
+  @Column({ name: 'email_verification_expires', type: 'timestamptz', nullable: true })
+  emailVerificationExpires!: Date | null;
+
+  @Column({ name: 'password_reset_token', type: 'varchar', nullable: true })
+  passwordResetToken!: string | null;
+
+  @Column({ name: 'password_reset_expires', type: 'timestamptz', nullable: true })
+  passwordResetExpires!: Date | null;
+
   @OneToMany(() => Company, (company) => company.user)
   companies!: Company[];
 }
