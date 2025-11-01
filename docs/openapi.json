@@ -4,6 +4,7 @@
     "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
+        "summary": "Register a new user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -28,6 +29,7 @@
     "/auth/login": {
       "post": {
         "operationId": "AuthController_login",
+        "summary": "Login user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -52,6 +54,7 @@
     "/auth/refresh": {
       "post": {
         "operationId": "AuthController_refresh",
+        "summary": "Refresh access token",
         "parameters": [],
         "responses": {
           "201": {
@@ -63,9 +66,142 @@
         ]
       }
     },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "summary": "Request password reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent"
+          },
+          "400": {
+            "description": "Invalid email"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "summary": "Reset password with token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "summary": "Verify email with token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/send-verification-email": {
+      "post": {
+        "operationId": "AuthController_sendVerificationEmail",
+        "summary": "Resend email verification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Verification email sent"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "operationId": "AuthController_googleAuth",
+        "summary": "Initiate Google OAuth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "operationId": "AuthController_googleAuthCallback",
+        "summary": "Google OAuth callback",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/auth/me": {
       "get": {
         "operationId": "AuthController_me",
+        "summary": "Get current user info",
         "parameters": [],
         "responses": {
           "200": {
@@ -673,6 +809,18 @@
         "properties": {}
       },
       "LoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerifyEmailDto": {
         "type": "object",
         "properties": {}
       },

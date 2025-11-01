@@ -21,6 +21,8 @@ import { AppService } from './app.service';
 import { ReminderQueueModule } from '../queue/reminder-queue.module';
 import { HealthAnalyticsModule } from '../common/health-analytics/health-analytics.module';
 import { RequestMetricsInterceptor } from '../common/health-analytics/request-metrics.interceptor';
+import { CommonModule } from '../common/common.module';
+import { AdminModule } from '../common/admin/admin.module';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { RequestMetricsInterceptor } from '../common/health-analytics/request-me
   RiskModule,
   ReminderQueueModule,
   HealthAnalyticsModule,
+  CommonModule,
+  AdminModule,
   ],
   controllers: [AppController],
   providers: [

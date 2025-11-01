@@ -29,4 +29,15 @@ export class UsersService {
     const saved = await this.repo.save(user);
     return toUserResponse(saved);
   }
+
+  async findAllUsers() {
+    const users = await this.repo.find({
+      select: ['userId', 'userEmail', 'userRegistrationDate', 'userUpdateDate', 'userActive', 'userRole'],
+    });
+    return users.map(user => toUserResponse(user));
+  }
+
+  async countUsers(): Promise<number> {
+    return await this.repo.count();
+  }
 }

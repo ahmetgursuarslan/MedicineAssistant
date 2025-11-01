@@ -251,7 +251,7 @@ Output (default): `openapi-spec.json` (path may be adjusted in `src/openapi/gene
 - [ ] Index & full‑text search (GIN + ts_vector on prospectus)
 - [x] Notification channel adapters (email / push abstraction) - *implemented queue system*
 - [x] Additional health analytics endpoints
-- [ ] Role-based authorization enforcement
+- [x] Role-based authorization enforcement
 
 ## 🧪 Suggested Test Coverage Areas
 - Auth service (hash, validate, token issue)
