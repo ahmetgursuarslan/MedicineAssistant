@@ -18,13 +18,16 @@ import { RiskModule } from '../risk/risk.module';
     ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
     TypeOrmModule.forRootAsync({
       useFactory: async (): Promise<TypeOrmModuleOptions> => {
+        // Mock database connection for OpenAPI generation to avoid PostgreSQL type conflicts
         return {
           type: 'sqlite',
           database: ':memory:',
-          entities: [],
           synchronize: false,
-          autoLoadEntities: true,
+          autoLoadEntities: false, // Prevent loading problematic entities during OpenAPI generation
           logging: false, // Disable logging for OpenAPI generation
+          // Configure to skip schema validation that causes PostgreSQL type issues
+          migrations: [],
+          entities: [], // Explicitly avoid loading entities that have PostgreSQL-specific types
         };
       },
     }),

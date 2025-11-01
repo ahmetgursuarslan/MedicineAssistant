@@ -14,11 +14,13 @@ import { RemindersModule } from '../reminders/reminders.module';
 import { RiskModule } from '../risk/risk.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ReminderQueueModule } from '../queue/reminder-queue.module';
+import { HealthAnalyticsModule } from '../common/health-analytics/health-analytics.module';
+import { RequestMetricsInterceptor } from '../common/health-analytics/request-metrics.interceptor';
 
 @Module({
   imports: [
@@ -64,11 +66,13 @@ import { ReminderQueueModule } from '../queue/reminder-queue.module';
     RemindersModule,
   RiskModule,
   ReminderQueueModule,
+  HealthAnalyticsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_INTERCEPTOR, useClass: RequestMetricsInterceptor },
   ],
 })
 export class AppModule {}

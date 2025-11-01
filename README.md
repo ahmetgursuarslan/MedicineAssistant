@@ -243,14 +243,14 @@ Output (default): `openapi-spec.json` (path may be adjusted in `src/openapi/gene
 | lint / format | Code quality & formatting |
 
 ## 🧭 Roadmap
-- [ ] Fix standalone OpenAPI generation edge cases (bootstrap exit)
+- [x] Fix standalone OpenAPI generation edge cases (bootstrap exit)
 - [x] Add refresh token rotation & revocation store
 - [x] Add Dockerfile + docker-compose (Postgres + Redis + app)
 - [x] Add comprehensive health check endpoint for all services and DB connectivity
 - [ ] CI pipeline (lint, test, coverage gate, build, spec artifact)
 - [ ] Index & full‑text search (GIN + ts_vector on prospectus)
 - [x] Notification channel adapters (email / push abstraction) - *implemented queue system*
-- [ ] Additional health analytics endpoints
+- [x] Additional health analytics endpoints
 - [ ] Role-based authorization enforcement
 
 ## 🧪 Suggested Test Coverage Areas
